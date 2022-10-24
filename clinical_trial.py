@@ -66,14 +66,15 @@ with model:
 
 if __name__ == "__main__":
     with model:
-        trace = pm.sample (2000, tune=1500, cores=4)
+        trace = pm.sample(3000, tune=2000, cores=4)
 
         az.plot_posterior(
             trace,
             var_names=["difference of means", "effect size"],
             ref_val=0,
-            color="#87ceeb"
-        )
+            color="#87ceeb")
+        plt.savefig('difference_of_means.png')
         plt.show()
 
         print(az.summary(trace, var_names=["difference of means", "difference of stds", "effect size"]))
+
