@@ -7,41 +7,41 @@ import matplotlib.pyplot as plt
 trader_frame = pd.read_csv("trader_frame.csv")
 
 # Generate squared S&P 500 values
-trader_frame['SP500Sq'] = trader_frame['SP500']**2
+trader_frame['SQ'] = trader_frame['^GSPC']**2
+trader_frame['SP'] = trader_frame['^GSPC']
 
 # Rename columns for formula notation
 trader_frame.rename(columns={"Jeppe Kirk Bonde": "Jeppe",
-                             "Blue Screen Media ApS": "Christian",
                              "Harry Stephan Harrison": "Harry"},
                     inplace=True)
 
 # Create first trader model
-jep_model = bmb.Model('Jeppe ~ SP500 + SP500Sq', trader_frame[['Jeppe', 'SP500', 'SP500Sq']].dropna())
+jep_model = bmb.Model('Jeppe ~ SP + SQ', trader_frame[['Jeppe', 'SP', 'SQ']].dropna())
 jep_result = jep_model.fit(draws=1000, chains=4, cores=1)
 
 # Extracting posterior samples for first trader
-jep2_samples = np.array(jep_result['posterior']['SP500Sq']).reshape(-1)
-jep1_samples = np.array(jep_result['posterior']['SP500']).reshape(-1)
+jep2_samples = np.array(jep_result['posterior']['SQ']).reshape(-1)
+jep1_samples = np.array(jep_result['posterior']['SP']).reshape(-1)
 jep0_samples = np.array(jep_result['posterior']['Intercept']).reshape(-1)
 
 
 # Create second trader model
-cph_model = bmb.Model('Christian ~ SP500 + SP500Sq', trader_frame[['Christian', 'SP500', 'SP500Sq']].dropna())
+cph_model = bmb.Model('VGT ~ SP + SQ', trader_frame[['VGT', 'SP', 'SQ']].dropna())
 cph_result = cph_model.fit(draws=1000, chains=4, cores=1)
 
 # Extracting posterior samples for first trader
-cph2_samples = np.array(cph_result['posterior']['SP500Sq']).reshape(-1)
-cph1_samples = np.array(cph_result['posterior']['SP500']).reshape(-1)
+cph2_samples = np.array(cph_result['posterior']['SQ']).reshape(-1)
+cph1_samples = np.array(cph_result['posterior']['SP']).reshape(-1)
 cph0_samples = np.array(cph_result['posterior']['Intercept']).reshape(-1)
 
 
 # Create third trader model
-har_model = bmb.Model('Harry ~ SP500 + SP500Sq', trader_frame[['Harry', 'SP500', 'SP500Sq']].dropna())
+har_model = bmb.Model('Harry ~ SP + SQ', trader_frame[['Harry', 'SP', 'SQ']].dropna())
 har_result = har_model.fit(draws=1000, chains=4, cores=1)
 
 # Extracting posterior samples for first trader
-har2_samples = np.array(har_result['posterior']['SP500Sq']).reshape(-1)
-har1_samples = np.array(har_result['posterior']['SP500']).reshape(-1)
+har2_samples = np.array(har_result['posterior']['SQ']).reshape(-1)
+har1_samples = np.array(har_result['posterior']['SP']).reshape(-1)
 har0_samples = np.array(har_result['posterior']['Intercept']).reshape(-1)
 
 # Define X variable
@@ -57,10 +57,10 @@ for i in range(250):
                  linewidth=0.2, color='blue')
     _ = plt.plot(x_var, har2_samples[i]*x_var**2 + har1_samples[i]*x_var + har0_samples[i], alpha=0.4,
                  linewidth=0.2, color='green')
-plt.legend(['Jeppe Kirk Bonde', 'Blue Screen Media ApS', 'Harry Stephan Harrison'])
+plt.legend(['Jeppe Kirk Bonde', 'VGT', 'Harry Stephan Harrison'])
 ax.plot([0, 1], [0, 1], transform=ax.transAxes, linestyle='--', color='grey')
 ax2 = ax.twinx()
-ax2.hist(trader_frame['SP500'], color='grey', alpha=0.25, bins=20)
+ax2.hist(trader_frame['SP'], color='grey', alpha=0.25, bins=20)
 plt.suptitle("Trader Performance Correlation to S&P 500")
 plt.title("with histogram of S&P 500 performance")
 plt.xlim(-0.15, 0.15)

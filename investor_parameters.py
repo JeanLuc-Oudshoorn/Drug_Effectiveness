@@ -10,15 +10,20 @@ print(f"Running on PyMC3 v{pm.__version__}")
 trader_frame = pd.read_csv("trader_frame.csv")
 
 # Extract list of traders
-trader_list = list(trader_frame.columns)[1:-1]
+trader_list = list(trader_frame.columns)[1:]
+trader_list.remove('^GSPC')
+
+# Traders of interest
+interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Blue Screen Media ApS', 'Jay Edward Smith',
+                 'VGT', 'VBK', 'ASML']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()
 
 
-for trader in trader_list:
+for trader in interest_list:
     # Extract Outcomes
-    y = np.array((trader_frame[trader] - trader_frame['SP500']).dropna())
+    y = np.array((trader_frame[trader] - trader_frame['^GSPC']).dropna())
 
     mu_mean = 0
     mu_sd = np.std(y) * 2
@@ -55,14 +60,14 @@ for trader in trader_list:
             # Save posterior sample for each trader to dictionary
             sample_dict[trader] = posterior_sample['diff_means']
 
-if len(sample_dict.keys()) == len(trader_list):
+if len(sample_dict.keys()) == len(interest_list):
     sample_df = pd.DataFrame.from_dict(sample_dict)
 
-    subsample_df = sample_df[['Jeppe Kirk Bonde', 'Jay Edward Smith', 'Blue Screen Media ApS', 'Harry Stephan Harrison',
-                              'Libor Vasa', 'Reinhardt Gert Coetzee']]
+    # Proportion of draws from posterior where performance is better than S&P 500
+    print(sample_df.apply(lambda x: np.sum(x > 0) / len(x)))
 
     sns.set_theme()
-    sns.kdeplot(data=subsample_df)
+    sns.kdeplot(data=sample_df)
     plt.axvline(x=0, color='black')
     plt.title("Estimated Distribution of Outperformance vs. S&P 500")
     plt.xlabel("Log Mean Outperformance (0.02 ~ 2% per month)")
