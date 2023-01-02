@@ -7,15 +7,15 @@ import seaborn as sns
 print(f"Running on PyMC3 v{pm.__version__}")
 
 # Read in pre-scraped data
-trader_frame = pd.read_csv("trader_frame.csv")
+trader_frame = pd.read_csv("trader_frame_upd.csv")
 
 # Extract list of traders
 trader_list = list(trader_frame.columns)[1:]
 trader_list.remove('^GSPC')
 
 # Traders of interest
-interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Blue Screen Media ApS', 'Jay Edward Smith',
-                 'VGT', 'VBK', 'ASML']
+interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Blue Screen Media ApS',
+                 'VB', 'VGT', 'VBK', 'VTI', 'ASML']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()
@@ -50,7 +50,7 @@ for trader in interest_list:
     if __name__ == "__main__":
         with model:
             # Perform Markov Chain Monte Carlo
-            trace = pm.sample(3000, tune=1800, cores=4)
+            trace = pm.sample(3000, tune=1800, cores=4, return_inferencedata=False)
 
             # Sample from the Posterior
             posterior_sample = pm.sample_posterior_predictive(
@@ -65,6 +65,12 @@ if len(sample_dict.keys()) == len(interest_list):
 
     # Proportion of draws from posterior where performance is better than S&P 500
     print(sample_df.apply(lambda x: np.sum(x > 0) / len(x)))
+
+    # Mean outperformance vs. the S&P 500
+    print(sample_df.mean())
+
+    # Median outperformance vs. the S&P 500
+    print(sample_df.median())
 
     sns.set_theme()
     sns.kdeplot(data=sample_df)
