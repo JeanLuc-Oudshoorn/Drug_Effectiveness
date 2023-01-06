@@ -15,7 +15,7 @@ trader_list.remove('^GSPC')
 
 # Traders of interest
 interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Blue Screen Media ApS',
-                 'VB', 'VGT', 'VBK', 'VTI', 'ASML']
+                 'VGT', 'VTI', 'V', 'MA', 'ASML']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()

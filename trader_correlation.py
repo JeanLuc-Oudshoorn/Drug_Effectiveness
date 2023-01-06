@@ -4,7 +4,7 @@ import bambi as bmb
 import matplotlib.pyplot as plt
 
 # Read in trader data
-trader_frame = pd.read_csv("trader_frame.csv")
+trader_frame = pd.read_csv("trader_frame_upd.csv")
 
 # Generate squared S&P 500 values
 trader_frame['SQ'] = trader_frame['^GSPC']**2
@@ -26,7 +26,7 @@ jep0_samples = np.array(jep_result['posterior']['Intercept']).reshape(-1)
 
 
 # Create second trader model
-cph_model = bmb.Model('VGT ~ SP + SQ', trader_frame[['VGT', 'SP', 'SQ']].dropna())
+cph_model = bmb.Model('ASML ~ SP + SQ', trader_frame[['ASML', 'SP', 'SQ']].dropna())
 cph_result = cph_model.fit(draws=1000, chains=4, cores=1)
 
 # Extracting posterior samples for first trader
@@ -57,7 +57,7 @@ for i in range(250):
                  linewidth=0.2, color='blue')
     _ = plt.plot(x_var, har2_samples[i]*x_var**2 + har1_samples[i]*x_var + har0_samples[i], alpha=0.4,
                  linewidth=0.2, color='green')
-plt.legend(['Jeppe Kirk Bonde', 'VGT', 'Harry Stephan Harrison'])
+plt.legend(['Jeppe Kirk Bonde', 'ASML', 'Harry Stephan Harrison'])
 ax.plot([0, 1], [0, 1], transform=ax.transAxes, linestyle='--', color='grey')
 ax2 = ax.twinx()
 ax2.hist(trader_frame['SP'], color='grey', alpha=0.25, bins=20)
