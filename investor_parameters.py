@@ -8,14 +8,28 @@ print(f"Running on PyMC3 v{pm.__version__}")
 
 # Read in pre-scraped data
 trader_frame = pd.read_csv("trader_frame_upd.csv")
+house_prices = pd.read_csv("house_prices.csv")
+
+# Convert to datetime
+trader_frame['Date'] = pd.to_datetime(trader_frame['Date'], utc=True)
+house_prices['Date'] = pd.to_datetime(house_prices['Date'])
+
+# Remove timezone information
+trader_frame['Date'] = trader_frame['Date'].dt.tz_localize(None)
+
+# Change hour of day to midnight
+trader_frame['Date'] = pd.to_datetime(trader_frame['Date'].dt.strftime("%Y-%m-%d"))
+
+# Join to house pricing data
+trader_frame = trader_frame.merge(house_prices, on=['Date'])
 
 # Extract list of traders
 trader_list = list(trader_frame.columns)[1:]
 trader_list.remove('^GSPC')
 
 # Traders of interest
-interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Blue Screen Media ApS',
-                 'VGT', 'VTI', 'V', 'MA', 'ASML']
+interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Aaron Wee Chong En',
+                 'VGT', 'VTI', 'MA', 'ASML', 'HouseIDX']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()

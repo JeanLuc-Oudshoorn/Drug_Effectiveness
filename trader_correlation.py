@@ -47,6 +47,7 @@ har0_samples = np.array(har_result['posterior']['Intercept']).reshape(-1)
 # Define X variable
 x_var = np.linspace(start=-0.2, stop=0.2, num=100)
 
+
 # Plot trader relations to S&P 500
 fig, ax = plt.subplots()
 plt.grid(visible=True)
