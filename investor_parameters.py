@@ -23,13 +23,16 @@ trader_frame['Date'] = pd.to_datetime(trader_frame['Date'].dt.strftime("%Y-%m-%d
 # Join to house pricing data
 trader_frame = trader_frame.merge(house_prices, on=['Date'])
 
+# Subset by dates
+trader_frame = trader_frame[trader_frame['Date'] >= '2017-01-01']
+
 # Extract list of traders
 trader_list = list(trader_frame.columns)[1:]
 trader_list.remove('^GSPC')
 
 # Traders of interest
-interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Aaron Wee Chong En',
-                 'VGT', 'VTI', 'MA', 'ASML', 'HouseIDX']
+interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Libor Vasa',
+                 'VGT', 'VTI', 'ASML', 'BRK-B', 'HouseIDX']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()
@@ -39,7 +42,7 @@ for trader in interest_list:
     # Extract Outcomes
     y = np.array((trader_frame[trader] - trader_frame['^GSPC']).dropna())
 
-    mu_mean = 0
+    mu_mean = 0.0
     mu_sd = np.std(y) * 2
 
     sd_low = np.std(y) * 0.01
