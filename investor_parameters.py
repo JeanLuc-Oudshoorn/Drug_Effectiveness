@@ -24,7 +24,7 @@ trader_frame['Date'] = pd.to_datetime(trader_frame['Date'].dt.strftime("%Y-%m-%d
 trader_frame = trader_frame.merge(house_prices, on=['Date'])
 
 # Subset by dates
-trader_frame = trader_frame[trader_frame['Date'] >= '2017-01-01']
+trader_frame = trader_frame[trader_frame['Date'] >= '2013-05-01']
 
 # Extract list of traders
 trader_list = list(trader_frame.columns)[1:]
@@ -32,7 +32,7 @@ trader_list.remove('^GSPC')
 
 # Traders of interest
 interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Libor Vasa',
-                 'VGT', 'VTI', 'ASML', 'BRK-B', 'HouseIDX']
+                 'VGT', 'VTI', 'ASML', 'HouseIDX', 'VB']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()
@@ -89,10 +89,11 @@ if len(sample_dict.keys()) == len(interest_list):
     # Median outperformance vs. the S&P 500
     print(sample_df.median())
 
+    sns.set(rc={'figure.figsize': (12, 9)})
     sns.set_theme()
     sns.kdeplot(data=sample_df)
     plt.axvline(x=0, color='black')
-    plt.title("Estimated Distribution of Outperformance vs. S&P 500")
+    plt.title("Estimated Distribution of Outperformance vs. S&P 500 (Since 2017-01-01)")
     plt.xlabel("Log Mean Outperformance (0.02 ~ 2% per month)")
-    plt.savefig('bayesian_density.png')
+    plt.savefig('bayesian_density_recent.png', bbox_inches='tight')
     plt.show()

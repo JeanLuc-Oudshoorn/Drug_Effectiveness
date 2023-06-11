@@ -58,6 +58,7 @@ for i in range(250):
                  linewidth=0.2, color='blue')
     _ = plt.plot(x_var, har2_samples[i]*x_var**2 + har1_samples[i]*x_var + har0_samples[i], alpha=0.4,
                  linewidth=0.2, color='green')
+
 plt.legend(['Jeppe Kirk Bonde', 'ASML', 'Harry Stephan Harrison'])
 ax.plot([0, 1], [0, 1], transform=ax.transAxes, linestyle='--', color='grey')
 ax2 = ax.twinx()
