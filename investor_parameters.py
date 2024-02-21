@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
-import pymc3 as pm
+import pymc as pm
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-print(f"Running on PyMC3 v{pm.__version__}")
+print(f"Running on PyMC v{pm.__version__}")
 
 # Read in pre-scraped data
 trader_frame = pd.read_csv("trader_frame_upd.csv")
@@ -28,11 +28,11 @@ trader_frame = trader_frame[trader_frame['Date'] >= '2013-05-01']
 
 # Extract list of traders
 trader_list = list(trader_frame.columns)[1:]
-trader_list.remove('^GSPC')
+trader_list.remove('SPY')
 
 # Traders of interest
 interest_list = ['Jeppe Kirk Bonde', 'Harry Stephan Harrison', 'Libor Vasa',
-                 'VGT', 'VTI', 'ASML', 'HouseIDX', 'VB']
+                 'VGT', 'VTI', 'ASML', 'HouseIDX', 'VB', 'QQQ']
 
 # Create dictionary to save posterior samples
 sample_dict = dict()
@@ -40,7 +40,7 @@ sample_dict = dict()
 
 for trader in interest_list:
     # Extract Outcomes
-    y = np.array((trader_frame[trader] - trader_frame['^GSPC']).dropna())
+    y = np.array((trader_frame[trader] - trader_frame['SPY']).dropna())
 
     mu_mean = 0.0
     mu_sd = np.std(y) * 2
@@ -67,15 +67,10 @@ for trader in interest_list:
     if __name__ == "__main__":
         with model:
             # Perform Markov Chain Monte Carlo
-            trace = pm.sample(3000, tune=1800, cores=4, return_inferencedata=False)
+            trace = pm.sample(3000, tune=1800, cores=4)
 
             # Sample from the Posterior
-            posterior_sample = pm.sample_posterior_predictive(
-                trace, var_names=["diff_means"]
-            )
-
-            # Save posterior sample for each trader to dictionary
-            sample_dict[trader] = posterior_sample['diff_means']
+            sample_dict[trader] = trace['posterior']['diff_means'].data.reshape(-1)
 
 if len(sample_dict.keys()) == len(interest_list):
     sample_df = pd.DataFrame.from_dict(sample_dict)
@@ -93,7 +88,7 @@ if len(sample_dict.keys()) == len(interest_list):
     sns.set_theme()
     sns.kdeplot(data=sample_df)
     plt.axvline(x=0, color='black')
-    plt.title("Estimated Distribution of Outperformance vs. S&P 500 (Since 2017-01-01)")
-    plt.xlabel("Log Mean Outperformance (0.02 ~ 2% per month)")
-    plt.savefig('bayesian_density_recent.png', bbox_inches='tight')
+    plt.title("Estimated Distribution of Outperformance vs. S&P 500 (Since 2013-07-01)")
+    plt.xlabel("Log Mean Outperformance (0.01 ~ 1% per month)")
+    plt.savefig('bayesian_density_medium.png', bbox_inches='tight')
     plt.show()

@@ -26,7 +26,7 @@ jep0_samples = np.array(jep_result['posterior']['Intercept']).reshape(-1)
 
 
 # Create second trader model
-cph_model = bmb.Model('ASML ~ SP + SQ', trader_frame[['ASML', 'SP', 'SQ']].dropna())
+cph_model = bmb.Model('QQQ ~ SP + SQ', trader_frame[['QQQ', 'SP', 'SQ']].dropna())
 cph_result = cph_model.fit(draws=1000, chains=4, cores=1)
 
 # Extracting posterior samples for first trader
@@ -59,7 +59,7 @@ for i in range(250):
     _ = plt.plot(x_var, har2_samples[i]*x_var**2 + har1_samples[i]*x_var + har0_samples[i], alpha=0.4,
                  linewidth=0.2, color='green')
 
-plt.legend(['Jeppe Kirk Bonde', 'ASML', 'Harry Stephan Harrison'])
+plt.legend(['Jeppe Kirk Bonde', 'QQQ', 'Harry Stephan Harrison'])
 ax.plot([0, 1], [0, 1], transform=ax.transAxes, linestyle='--', color='grey')
 ax2 = ax.twinx()
 ax2.hist(trader_frame['SP'], color='grey', alpha=0.25, bins=20)

@@ -34,7 +34,7 @@ house_prices.drop(columns=['Id', 'Measure', 'Value', 'Perioden', 'ValueAttribute
 house_prices.set_index('Date', inplace=True)
 
 # Subset for comparison with other financial time series
-house_prices = house_prices.loc['2003-12-01':]
+house_prices = house_prices.loc['2013-07-01':]
 
 # Plot the result
 house_prices.plot()
